@@ -1,7 +1,5 @@
-export interface Card {
-  value: string;
-  suit: string;
-}
+import { Card } from "../types";
+
 export const deck: Card[] = [
   {
     value: "A",
