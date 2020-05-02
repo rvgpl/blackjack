@@ -1,0 +1,15 @@
+.hand-cards-container {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 32px 0;
+}
+
+.hand-count {
+  text-align: center;
+  font-size: var(--fs-xxl);
+  font-weight: bold;
+}

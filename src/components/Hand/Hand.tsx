@@ -1,20 +1,22 @@
 import React from "react";
 import "./Hand.css";
-import { PickedCard } from "../../types";
+import { PickedCard, HandType } from "../../types";
+import Card from "../Card/Card";
 
 interface HandProps {
+  handType: HandType;
   count: number;
   cards: PickedCard[];
 }
-const Hand = ({ count, cards }: HandProps) => {
+const Hand = ({ handType, count, cards }: HandProps) => {
   return (
-    <div>
-      <h3>number of cards ({count})</h3>
-      <ul>
+    <div className="hand-container">
+      <h3 className="hand-count">{`${handType} (${count})`}</h3>
+      <ul className="hand-cards-container">
         {cards.length > 0 &&
           cards.map((card: PickedCard) => (
-            <li>
-              {card.value} - {card.suit}
+            <li key={card.value}>
+              <Card card={card} />
             </li>
           ))}
       </ul>

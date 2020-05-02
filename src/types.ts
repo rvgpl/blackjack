@@ -9,6 +9,11 @@ export enum CardType {
   Hidden,
 }
 
+export enum HandType {
+  Player = "Player's Hand",
+  Dealer = "Dealer's Hand",
+}
+
 export interface PickedCard extends Card {
   hidden: boolean;
 }

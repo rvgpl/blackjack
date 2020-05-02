@@ -2,14 +2,16 @@
   --green: #004e00;
   --black: #111;
   --white: #fff;
+  --red: #d62828;
 
-  --fs-m: 16px;
-  --fs-l: 20px;
-  --fs-xl: 24px;
-  --fs-xxl: 32px;
+  --fs-m: 1em;
+  --fs-l: 1.25em;
+  --fs-xl: 1.5em;
+  --fs-xxl: 2em;
 }
 
 body {
   font-family: monospace;
   background-color: var(--green);
+  color: var(--white);
 }

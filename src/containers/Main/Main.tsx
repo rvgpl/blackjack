@@ -131,7 +131,7 @@ const Main = () => {
       if (dealerScore >= 17) {
         revealDealerCards();
         determineWinner(playerCount, dealerScore);
-        return;
+        setGameState(GameState.GameOver);
       } else {
         drawCard(CardType.Dealer);
       }
@@ -149,7 +149,6 @@ const Main = () => {
   return (
     <Table
       statusMessage={statusMessage}
-      deck={deck}
       playerCount={playerCount}
       playerCards={playerCards}
       dealerCards={dealerCards}

@@ -1,0 +1,53 @@
+.card {
+  position: relative;
+  min-width: 40px;
+  width: 2em;
+  height: 8em;
+  margin: 10px;
+  padding: 10px 20px;
+  background: var(--white);
+  border-radius: 15px;
+  cursor: default;
+  display: flex;
+  align-items: center;
+}
+
+.card-hidden {
+  background-image: linear-gradient(
+    176deg,
+    #ffffff 8.33%,
+    #222 8.33%,
+    #999 50%,
+    #ffffff 50%,
+    #ffffff 58.33%,
+    #222 58.33%,
+    #999 100%
+  );
+  background-size: 60px 4px;
+  border: 5px solid white;
+  cursor: default;
+}
+.card-black {
+  color: var(--black);
+}
+
+.card-red {
+  color: var(--red);
+}
+
+.card-suit {
+  font-size: 4em;
+  text-align: center;
+}
+
+.card-value {
+  position: absolute;
+  font-size: var(--fs-xxl);
+  top: 8px;
+  left: 10px;
+}
+
+.card-hidden .card-suit,
+.card-hidden .card-value {
+  display: none;
+}

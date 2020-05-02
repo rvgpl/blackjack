@@ -1,5 +1,5 @@
 import React from "react";
-import { PickedCard, Card, GameState } from "../../types";
+import { PickedCard, GameState, HandType } from "../../types";
 import Message from "../Message/Message";
 import Header from "../Header/Header";
 import Hand from "../Hand/Hand";
@@ -9,7 +9,6 @@ import "./Table.css";
 
 interface TableProps {
   statusMessage: string;
-  deck: Card[];
   playerCount: number;
   playerCards: PickedCard[];
   dealerCards: PickedCard[];
@@ -36,11 +35,16 @@ const Table = (props: TableProps) => {
     <div className="table">
       <Header />
       <Message>{statusMessage}</Message>
-      {/* <h3>Cards in the deck: {deck.length} </h3> */}
-      <p>Dealer</p>
-      <Hand count={dealerCount} cards={dealerCards} />
-      <p>Player</p>
-      <Hand count={playerCount} cards={playerCards} />
+      <Hand
+        handType={HandType.Dealer}
+        count={dealerCount}
+        cards={dealerCards}
+      />
+      <Hand
+        handType={HandType.Player}
+        count={playerCount}
+        cards={playerCards}
+      />
 
       <Actions hit={hit} stand={stand} reset={reset} gameState={gameState} />
     </div>
