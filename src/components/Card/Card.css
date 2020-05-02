@@ -13,17 +13,7 @@
 }
 
 .card-hidden {
-  background-image: linear-gradient(
-    176deg,
-    #ffffff 8.33%,
-    #222 8.33%,
-    #999 50%,
-    #ffffff 50%,
-    #ffffff 58.33%,
-    #222 58.33%,
-    #999 100%
-  );
-  background-size: 60px 4px;
+  background-color: var(--black);
   border: 5px solid white;
   cursor: default;
 }
