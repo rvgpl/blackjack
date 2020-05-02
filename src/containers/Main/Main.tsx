@@ -51,7 +51,10 @@ const Main = () => {
       case CardType.Player:
         const playerCard = [{ ...card, hidden: false }];
         setPlayerCount((prevState: number) => getCardCount(prevState, card));
-        setPlayerCards((prevState: PickedCard[]) => [...prevState, ...playerCard]);
+        setPlayerCards((prevState: PickedCard[]) => [
+          ...prevState,
+          ...playerCard,
+        ]);
         break;
 
       case CardType.Dealer:
@@ -110,6 +113,7 @@ const Main = () => {
   };
 
   const reset = () => {
+    setDeck(defaultDeck);
     setPlayerCount(0);
     setDealerCount(0);
     setDealerScore(0);
