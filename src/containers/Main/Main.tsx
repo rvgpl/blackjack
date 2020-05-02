@@ -131,6 +131,7 @@ const Main = () => {
       if (dealerScore >= 17) {
         revealDealerCards();
         determineWinner(playerCount, dealerScore);
+        return;
       } else {
         drawCard(CardType.Dealer);
       }
@@ -146,21 +147,18 @@ const Main = () => {
   ]);
 
   return (
-    <div>
-      <h1>Black Jack</h1>
-      <Table
-        statusMessage={statusMessage}
-        deck={deck}
-        playerCount={playerCount}
-        playerCards={playerCards}
-        dealerCards={dealerCards}
-        dealerCount={dealerCount}
-        gameState={gameState}
-        hit={hit}
-        stand={stand}
-        reset={reset}
-      />
-    </div>
+    <Table
+      statusMessage={statusMessage}
+      deck={deck}
+      playerCount={playerCount}
+      playerCards={playerCards}
+      dealerCards={dealerCards}
+      dealerCount={dealerCount}
+      gameState={gameState}
+      hit={hit}
+      stand={stand}
+      reset={reset}
+    />
   );
 };
 

@@ -1,0 +1,37 @@
+.actions-container {
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.actions-button {
+  background: var(--black);
+  color: var(--white);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  text-transform: uppercase;
+  font-size: var(--fs-m);
+  letter-spacing: 1px;
+  width: 100%;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.3 ease;
+  outline: none;
+}
+
+.actions-button:hover {
+  opacity: 0.8;
+}
+
+.actions-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.action-button-full-width {
+  grid-column: span 2;
+}

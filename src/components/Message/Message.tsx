@@ -1,7 +1,8 @@
 import React, { FunctionComponent } from "react";
+import "./Message.css";
 
 const Message: FunctionComponent = ({ children }) => {
-  return <h3>{children}</h3>;
+  return children ? <h3 className="message">{children}</h3> : null;
 };
 
 export default Message;

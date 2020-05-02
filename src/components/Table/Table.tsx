@@ -1,6 +1,11 @@
 import React from "react";
 import { PickedCard, Card, GameState } from "../../types";
 import Message from "../Message/Message";
+import Header from "../Header/Header";
+import Hand from "../Hand/Hand";
+import Actions from "../Actions/Actions";
+
+import "./Table.css";
 
 interface TableProps {
   statusMessage: string;
@@ -18,7 +23,6 @@ interface TableProps {
 const Table = (props: TableProps) => {
   const {
     statusMessage,
-    deck,
     playerCount,
     playerCards,
     dealerCards,
@@ -29,60 +33,16 @@ const Table = (props: TableProps) => {
     reset,
   } = props;
   return (
-    <div>
+    <div className="table">
+      <Header />
       <Message>{statusMessage}</Message>
-      <h3>Cards in the deck: {deck.length} </h3>
-      <div>
-        <h3>Player Cards ({playerCount})</h3>
-        <ul>
-          {playerCards.length > 0 &&
-            playerCards.map((card: PickedCard) => (
-              <li>
-                {card.value} - {card.suit}
-              </li>
-            ))}
-        </ul>
-      </div>
-      <div>
-        <h3>Dealer Cards ({dealerCount})</h3>
-        <ul>
-          {dealerCards.length > 0 &&
-            dealerCards.map((card: PickedCard) => {
-              if (card.hidden) {
-                return <li>Hidden Card</li>;
-              } else {
-                return (
-                  <li>
-                    {card.value} - {card.suit}
-                  </li>
-                );
-              }
-            })}
-        </ul>
-      </div>
-      <div>
-        <button
-          disabled={
-            (gameState === GameState.GameOver ||
-              gameState === GameState.DealerHand) &&
-            true
-          }
-          onClick={() => hit()}
-        >
-          Hit
-        </button>
-        <button
-          disabled={
-            (gameState === GameState.GameOver ||
-              gameState === GameState.DealerHand) &&
-            true
-          }
-          onClick={() => stand()}
-        >
-          Stand
-        </button>
-        <button onClick={() => reset()}>Reset</button>
-      </div>
+      {/* <h3>Cards in the deck: {deck.length} </h3> */}
+      <p>Dealer</p>
+      <Hand count={dealerCount} cards={dealerCards} />
+      <p>Player</p>
+      <Hand count={playerCount} cards={playerCards} />
+
+      <Actions hit={hit} stand={stand} reset={reset} gameState={gameState} />
     </div>
   );
 };

@@ -1,0 +1,14 @@
+.header {
+  background-color: var(--black);
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header .title {
+  font-size: var(--fs-xl);
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: var(--white);
+}

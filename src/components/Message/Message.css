@@ -1,0 +1,7 @@
+.message {
+  font-size: var(--fs-xxl);
+  display: flex;
+  justify-content: center;
+  border: 4px solid gray;
+  padding: 16px;
+}
