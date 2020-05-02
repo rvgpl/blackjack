@@ -14,6 +14,19 @@ const Main = () => {
     hidden: boolean;
   }
 
+  enum StatusMessage {
+    PlayerWins = "You Win, Dealer Lose",
+    DealerWins = "Dealer Wins, You Lose",
+    Tie = "The game resulted in a Tie!",
+  }
+
+  enum GameState {
+    Init,
+    PlayerHand,
+    DealerHand,
+    GameOver,
+  }
+
   // Player Cards
   const [playerCards, setPlayerCards] = useState<PickedCard[]>([]);
   const [playerCount, setPlayerCount] = useState<number>(0);
@@ -21,16 +34,39 @@ const Main = () => {
   // Dealer Cards
   const [dealerCards, setDealerCards] = useState<PickedCard[]>([]);
   const [dealerCount, setDealerCount] = useState<number>(0);
+  const [dealerScore, setDealerScore] = useState<number>(0);
 
+  //Status Message
+  const [statusMessage, setStatusMessage] = useState<string>("");
+
+  // Game state
+  const [gameState, setGameState] = useState<GameState>(GameState.Init);
+
+  // Game state
   useEffect(() => {
-    drawCard(CardType.Player);
-    drawCard(CardType.Player);
-    drawCard(CardType.Dealer);
-    drawCard(CardType.Hidden);
-  }, []);
+    if (gameState === GameState.Init) {
+      drawCard(CardType.Player);
+      drawCard(CardType.Hidden);
+      drawCard(CardType.Player);
+      drawCard(CardType.Dealer);
+      setGameState(GameState.PlayerHand);
+    }
+    if (gameState === GameState.PlayerHand && playerCount > 21) {
+      setGameState(GameState.GameOver);
+      setStatusMessage(StatusMessage.DealerWins);
+    }
+
+    if (gameState === GameState.DealerHand) {
+      if (dealerScore >= 17) {
+        checkWin();
+      } else {
+        drawCard(CardType.Dealer);
+      }
+    }
+  }, [gameState, playerCount, dealerCount]);
 
   const getAceValue = (count: number) => {
-    if (count + 11 >= 21) {
+    if (count + 11 > 21) {
       return 1;
     } else {
       return 11;
@@ -77,19 +113,20 @@ const Main = () => {
     switch (cardType) {
       case CardType.Player:
         const playerCard = [{ ...card, hidden: false }];
-        setPlayerCount(getCount(playerCount, card));
+        setPlayerCount((prevState) => getCount(prevState, card));
         setPlayerCards((prevState) => [...prevState, ...playerCard]);
         break;
 
       case CardType.Dealer:
         const dealerCard = [{ ...card, hidden: false }];
-        setDealerCount(getCount(dealerCount, card));
+        setDealerCount((prevState) => getCount(prevState, card));
+        setDealerScore((prevState) => getCount(prevState, card));
         setDealerCards((prevState) => [...prevState, ...dealerCard]);
         break;
 
       case CardType.Hidden:
         const hiddenCard = [{ ...card, hidden: true }];
-        setDealerCount(getCount(dealerCount, card));
+        setDealerScore((prevState) => getCount(prevState, card));
         setDealerCards((prevState) => [...prevState, ...hiddenCard]);
         break;
 
@@ -98,10 +135,53 @@ const Main = () => {
     }
   };
 
+  const hit = () => {
+    drawCard(CardType.Player);
+  };
+
+  const stand = () => {
+    setGameState(GameState.DealerHand);
+  };
+
+  const revealDealerCards = () => {
+    const revealedDealerCards: PickedCard[] = dealerCards.map(
+      (card: PickedCard) => {
+        if (card.hidden === true) {
+          card.hidden = false;
+        }
+        return card;
+      }
+    );
+    setDealerCount(dealerScore);
+    setDealerCards(revealedDealerCards);
+  };
+
+  const checkWin = () => {
+    revealDealerCards();
+    if (playerCount > dealerScore || dealerScore > 21) {
+      setStatusMessage(StatusMessage.PlayerWins);
+    } else if (dealerScore > playerCount) {
+      setStatusMessage(StatusMessage.DealerWins);
+    } else {
+      setStatusMessage(StatusMessage.Tie);
+    }
+  };
+
+  const reset = () => {
+    setStatusMessage("");
+    setPlayerCount(0);
+    setDealerCount(0);
+    setDealerScore(0);
+    setPlayerCards([]);
+    setDealerCards([]);
+    setGameState(GameState.Init);
+  };
+
   return (
     <div>
-      <h1>Renders</h1>
-      {deck.length}
+      <h1>Black Jack</h1>
+      <h4>{statusMessage}</h4>
+      <h3>Cards in the deck: {deck.length} </h3>
       <div>
         <h3>Player Cards ({playerCount})</h3>
         <ul>
@@ -117,12 +197,41 @@ const Main = () => {
         <h3>Dealer Cards ({dealerCount})</h3>
         <ul>
           {dealerCards.length > 0 &&
-            dealerCards.map((card: PickedCard) => (
-              <li>
-                {card.value} - {card.suit} {card.hidden && " - hidden"}
-              </li>
-            ))}
+            dealerCards.map((card: PickedCard) => {
+              if (card.hidden) {
+                return <li>Hidden Card</li>;
+              } else {
+                return (
+                  <li>
+                    {card.value} - {card.suit}
+                  </li>
+                );
+              }
+            })}
         </ul>
+      </div>
+      <div>
+        <button
+          disabled={
+            (gameState === GameState.GameOver ||
+              gameState === GameState.DealerHand) &&
+            true
+          }
+          onClick={() => hit()}
+        >
+          Hit
+        </button>
+        <button
+          disabled={
+            (gameState === GameState.GameOver ||
+              gameState === GameState.DealerHand) &&
+            true
+          }
+          onClick={() => stand()}
+        >
+          Stand
+        </button>
+        <button onClick={() => reset()}>Reset</button>
       </div>
     </div>
   );
