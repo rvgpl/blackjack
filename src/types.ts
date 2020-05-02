@@ -10,8 +10,8 @@ export enum CardType {
 }
 
 export enum HandType {
-  Player = "Player's Hand",
-  Dealer = "Dealer's Hand",
+  Player = "Player's",
+  Dealer = "Dealer's",
 }
 
 export interface PickedCard extends Card {

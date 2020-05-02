@@ -34,19 +34,21 @@ const Table = (props: TableProps) => {
   return (
     <div className="table">
       <Header />
-      <Message>{statusMessage}</Message>
-      <Hand
-        handType={HandType.Dealer}
-        count={dealerCount}
-        cards={dealerCards}
-      />
-      <Hand
-        handType={HandType.Player}
-        count={playerCount}
-        cards={playerCards}
-      />
+      <main className="table-wrapper">
+        <Message>{statusMessage}</Message>
+        <Hand
+          handType={HandType.Dealer}
+          count={dealerCount}
+          cards={dealerCards}
+        />
+        <Hand
+          handType={HandType.Player}
+          count={playerCount}
+          cards={playerCards}
+        />
 
-      <Actions hit={hit} stand={stand} reset={reset} gameState={gameState} />
+        <Actions hit={hit} stand={stand} reset={reset} gameState={gameState} />
+      </main>
     </div>
   );
 };

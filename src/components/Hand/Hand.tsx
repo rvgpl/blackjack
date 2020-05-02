@@ -11,7 +11,7 @@ interface HandProps {
 const Hand = ({ handType, count, cards }: HandProps) => {
   return (
     <div className="hand-container">
-      <h3 className="hand-count">{`${handType} (${count})`}</h3>
+      <h3 className="hand-count">{`${handType} Score : ${count}`}</h3>
       <ul className="hand-cards-container">
         {cards.length > 0 &&
           cards.map((card: PickedCard) => (
