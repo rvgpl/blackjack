@@ -3,6 +3,8 @@
 Built using Create React App Typescript.
 Uses Jest + Enzyme for testing
 
+Deployed to Netlify [Link to Demo](https://rvgpl-blackjack.netlify.app)
+
 ## Setup Instructions
 
 - git clone this repo
