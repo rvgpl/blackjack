@@ -50,21 +50,27 @@ const Main = () => {
     switch (cardType) {
       case CardType.Player:
         const playerCard = [{ ...card, hidden: false }];
-        setPlayerCount((prevState) => getCardCount(prevState, card));
-        setPlayerCards((prevState) => [...prevState, ...playerCard]);
+        setPlayerCount((prevState: number) => getCardCount(prevState, card));
+        setPlayerCards((prevState: PickedCard[]) => [...prevState, ...playerCard]);
         break;
 
       case CardType.Dealer:
         const dealerCard = [{ ...card, hidden: false }];
-        setDealerCount((prevState) => getCardCount(prevState, card));
-        setDealerScore((prevState) => getCardCount(prevState, card));
-        setDealerCards((prevState) => [...prevState, ...dealerCard]);
+        setDealerCount((prevState: number) => getCardCount(prevState, card));
+        setDealerScore((prevState: number) => getCardCount(prevState, card));
+        setDealerCards((prevState: PickedCard[]) => [
+          ...prevState,
+          ...dealerCard,
+        ]);
         break;
 
       case CardType.Hidden:
         const hiddenCard = [{ ...card, hidden: true }];
-        setDealerScore((prevState) => getCardCount(prevState, card));
-        setDealerCards((prevState) => [...prevState, ...hiddenCard]);
+        setDealerScore((prevState: number) => getCardCount(prevState, card));
+        setDealerCards((prevState: PickedCard[]) => [
+          ...prevState,
+          ...hiddenCard,
+        ]);
         break;
 
       default:
