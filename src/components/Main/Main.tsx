@@ -15,14 +15,15 @@ const Main = () => {
   }
 
   // Player Cards
-  const [playerCards, setPlayerCards] = useState<PickedCard[] | []>([]);
+  const [playerCards, setPlayerCards] = useState<PickedCard[]>([]);
   const [playerCount, setPlayerCount] = useState<number>(0);
 
   // Dealer Cards
-  const [dealerCards, setDealerCards] = useState<PickedCard[] | []>([]);
+  const [dealerCards, setDealerCards] = useState<PickedCard[]>([]);
   const [dealerCount, setDealerCount] = useState<number>(0);
 
   useEffect(() => {
+    drawCard(CardType.Player);
     drawCard(CardType.Player);
     drawCard(CardType.Dealer);
     drawCard(CardType.Hidden);
@@ -101,6 +102,28 @@ const Main = () => {
     <div>
       <h1>Renders</h1>
       {deck.length}
+      <div>
+        <h3>Player Cards ({playerCount})</h3>
+        <ul>
+          {playerCards.length > 0 &&
+            playerCards.map((card: PickedCard) => (
+              <li>
+                {card.value} - {card.suit}
+              </li>
+            ))}
+        </ul>
+      </div>
+      <div>
+        <h3>Dealer Cards ({dealerCount})</h3>
+        <ul>
+          {dealerCards.length > 0 &&
+            dealerCards.map((card: PickedCard) => (
+              <li>
+                {card.value} - {card.suit} {card.hidden && " - hidden"}
+              </li>
+            ))}
+        </ul>
+      </div>
     </div>
   );
 };
