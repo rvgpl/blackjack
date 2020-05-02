@@ -1,9 +1,8 @@
-export interface Deck {
+export interface Card {
   value: string;
   suit: string;
 }
-
-export const deck: Deck[] = [
+export const deck: Card[] = [
   {
     value: "A",
     suit: "spades",
