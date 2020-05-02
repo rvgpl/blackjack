@@ -1,31 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { deck as defaultDeck, Card } from "../../constants/deck";
+import { CardType, GameState, StatusMessage, PickedCard } from "./types";
+import { getCardCount } from "../utils";
 
 const Main = () => {
   const [deck, setDeck] = useState<Card[]>(defaultDeck);
-
-  enum CardType {
-    Player,
-    Dealer,
-    Hidden,
-  }
-
-  interface PickedCard extends Card {
-    hidden: boolean;
-  }
-
-  enum StatusMessage {
-    PlayerWins = "You Win, Dealer Lose",
-    DealerWins = "Dealer Wins, You Lose",
-    Tie = "The game resulted in a Tie!",
-  }
-
-  enum GameState {
-    Init,
-    PlayerHand,
-    DealerHand,
-    GameOver,
-  }
 
   // Player Cards
   const [playerCards, setPlayerCards] = useState<PickedCard[]>([]);
@@ -42,91 +21,42 @@ const Main = () => {
   // Game state
   const [gameState, setGameState] = useState<GameState>(GameState.Init);
 
-  // Game state
-  useEffect(() => {
-    if (gameState === GameState.Init) {
-      drawCard(CardType.Player);
-      drawCard(CardType.Hidden);
-      drawCard(CardType.Player);
-      drawCard(CardType.Dealer);
-      setGameState(GameState.PlayerHand);
-    }
-    if (gameState === GameState.PlayerHand && playerCount > 21) {
-      setGameState(GameState.GameOver);
-      setStatusMessage(StatusMessage.DealerWins);
-    }
+  const drawCard = useCallback(
+    (cardType: CardType) => {
+      if (deck.length > 0) {
+        const randomIndex = Math.floor(Math.random() * deck.length);
+        const card = deck[randomIndex];
 
-    if (gameState === GameState.DealerHand) {
-      if (dealerScore >= 17) {
-        checkWin();
+        let modifiedDeck = deck;
+        modifiedDeck.splice(randomIndex, 1);
+
+        setDeck([...modifiedDeck]);
+        setCard(cardType, card);
       } else {
-        drawCard(CardType.Dealer);
+        setStatusMessage(StatusMessage.GameOver);
       }
-    }
-  }, [gameState, playerCount, dealerCount]);
-
-  const getAceValue = (count: number) => {
-    if (count + 11 > 21) {
-      return 1;
-    } else {
-      return 11;
-    }
-  };
-
-  const getCount = (count: number = 0, card: Card): number => {
-    switch (card.value) {
-      case "A":
-        count = getAceValue(count);
-        break;
-      case "K":
-        count += 10;
-        break;
-      case "Q":
-        count += 10;
-        break;
-      case "J":
-        count += 10;
-        break;
-      default:
-        count += Number(card.value);
-        break;
-    }
-    return count;
-  };
-
-  const drawCard = (cardType: CardType) => {
-    if (deck.length > 0) {
-      const randomIndex = Math.floor(Math.random() * deck.length);
-      const card = deck[randomIndex];
-
-      let modifiedDeck = deck;
-      modifiedDeck.splice(randomIndex, 1);
-
-      setDeck([...modifiedDeck]);
-      setCard(cardType, card);
-    } else {
-      alert("All cards have been drawn");
-    }
-  };
+    },
+    [deck]
+  );
 
   const setCard = (cardType: CardType, card: Card) => {
     switch (cardType) {
       case CardType.Player:
         const playerCard = [{ ...card, hidden: false }];
-        setPlayerCount((prevState) => getCount(prevState, card));
+        setPlayerCount((prevState) => getCardCount(prevState, card));
         setPlayerCards((prevState) => [...prevState, ...playerCard]);
         break;
 
       case CardType.Dealer:
         const dealerCard = [{ ...card, hidden: false }];
-        setDealerCount((prevState) => getCount(prevState, card));
-        setDealerScore((prevState) => getCount(prevState, card));
+        setDealerCount((prevState) => getCardCount(prevState, card));
+        setDealerScore((prevState) => getCardCount(prevState, card));
         setDealerCards((prevState) => [...prevState, ...dealerCard]);
         break;
 
       case CardType.Hidden:
         const hiddenCard = [{ ...card, hidden: true }];
-        setDealerScore((prevState) => getCount(prevState, card));
+        setDealerScore((prevState) => getCardCount(prevState, card));
         setDealerCards((prevState) => [...prevState, ...hiddenCard]);
         break;
 
@@ -143,7 +73,7 @@ const Main = () => {
     setGameState(GameState.DealerHand);
   };
 
-  const revealDealerCards = () => {
+  const revealDealerCards = useCallback(() => {
     const revealedDealerCards: PickedCard[] = dealerCards.map(
       (card: PickedCard) => {
         if (card.hidden === true) {
@@ -154,13 +84,12 @@ const Main = () => {
     );
     setDealerCount(dealerScore);
     setDealerCards(revealedDealerCards);
-  };
+  }, [dealerCards, dealerScore]);
 
-  const checkWin = () => {
-    revealDealerCards();
-    if (playerCount > dealerScore || dealerScore > 21) {
+  const determineWinner = (playerScore: number, dealerScore: number) => {
+    if (playerScore > dealerScore || dealerScore > 21) {
       setStatusMessage(StatusMessage.PlayerWins);
-    } else if (dealerScore > playerCount) {
+    } else if (dealerScore > playerScore) {
       setStatusMessage(StatusMessage.DealerWins);
     } else {
       setStatusMessage(StatusMessage.Tie);
@@ -168,14 +97,46 @@ const Main = () => {
   };
 
   const reset = () => {
-    setStatusMessage("");
     setPlayerCount(0);
     setDealerCount(0);
     setDealerScore(0);
     setPlayerCards([]);
     setDealerCards([]);
     setGameState(GameState.Init);
+    setStatusMessage("");
   };
+
+  // Game Loop
+  useEffect(() => {
+    if (gameState === GameState.Init) {
+      drawCard(CardType.Player);
+      drawCard(CardType.Hidden);
+      drawCard(CardType.Player);
+      drawCard(CardType.Dealer);
+      setGameState(GameState.PlayerHand);
+    }
+    if (gameState === GameState.PlayerHand && playerCount > 21) {
+      setGameState(GameState.GameOver);
+      setStatusMessage(StatusMessage.DealerWins);
+    }
+
+    if (gameState === GameState.DealerHand) {
+      if (dealerScore >= 17) {
+        revealDealerCards();
+        determineWinner(playerCount, dealerScore);
+      } else {
+        drawCard(CardType.Dealer);
+      }
+    }
+  }, [
+    gameState,
+    playerCount,
+    dealerCount,
+    dealerScore,
+    dealerCards,
+    drawCard,
+    revealDealerCards,
+  ]);
 
   return (
     <div>

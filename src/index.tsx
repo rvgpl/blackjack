@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Main from "./components/Main/Main";
+import Main from "./containers/Main/Main";
 import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(
