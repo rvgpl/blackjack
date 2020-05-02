@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { deck as defaultDeck, Card } from "../../constants/deck";
-import { CardType, GameState, StatusMessage, PickedCard } from "./types";
+import { deck as defaultDeck } from "../../constants/deck";
+import {
+  CardType,
+  GameState,
+  StatusMessage,
+  PickedCard,
+  Card,
+} from "../../types";
 import { getCardCount } from "../utils";
+import Table from "../../components/Table/Table";
 
 const Main = () => {
   const [deck, setDeck] = useState<Card[]>(defaultDeck);
@@ -141,59 +148,18 @@ const Main = () => {
   return (
     <div>
       <h1>Black Jack</h1>
-      <h4>{statusMessage}</h4>
-      <h3>Cards in the deck: {deck.length} </h3>
-      <div>
-        <h3>Player Cards ({playerCount})</h3>
-        <ul>
-          {playerCards.length > 0 &&
-            playerCards.map((card: PickedCard) => (
-              <li>
-                {card.value} - {card.suit}
-              </li>
-            ))}
-        </ul>
-      </div>
-      <div>
-        <h3>Dealer Cards ({dealerCount})</h3>
-        <ul>
-          {dealerCards.length > 0 &&
-            dealerCards.map((card: PickedCard) => {
-              if (card.hidden) {
-                return <li>Hidden Card</li>;
-              } else {
-                return (
-                  <li>
-                    {card.value} - {card.suit}
-                  </li>
-                );
-              }
-            })}
-        </ul>
-      </div>
-      <div>
-        <button
-          disabled={
-            (gameState === GameState.GameOver ||
-              gameState === GameState.DealerHand) &&
-            true
-          }
-          onClick={() => hit()}
-        >
-          Hit
-        </button>
-        <button
-          disabled={
-            (gameState === GameState.GameOver ||
-              gameState === GameState.DealerHand) &&
-            true
-          }
-          onClick={() => stand()}
-        >
-          Stand
-        </button>
-        <button onClick={() => reset()}>Reset</button>
-      </div>
+      <Table
+        statusMessage={statusMessage}
+        deck={deck}
+        playerCount={playerCount}
+        playerCards={playerCards}
+        dealerCards={dealerCards}
+        dealerCount={dealerCount}
+        gameState={gameState}
+        hit={hit}
+        stand={stand}
+        reset={reset}
+      />
     </div>
   );
 };
