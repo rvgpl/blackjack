@@ -12,4 +12,5 @@ Uses Jest + Enzyme for testing
 ### Pending
 
 - Add tests for core logic
+- Add animations for card draw
 - Better design
