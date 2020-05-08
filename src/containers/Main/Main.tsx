@@ -1,169 +1,78 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { deck as defaultDeck } from "../../constants/deck";
-import {
-  CardType,
-  GameState,
-  StatusMessage,
-  PickedCard,
-  Card,
-} from "../../types";
-import { getCardCount } from "../utils";
+import React, { useEffect, useCallback, useReducer } from "react";
+
+import { CardType, GameState, StatusMessage } from "../../types";
 import Table from "../../components/Table/Table";
+import {
+  boardReducer,
+  INITIAL_BOARD_STATE,
+} from "../../reducers/board-reducer";
 
 const Main = () => {
-  const [deck, setDeck] = useState<Card[]>(defaultDeck);
-
-  // Player Cards
-  const [playerCards, setPlayerCards] = useState<PickedCard[]>([]);
-  const [playerCount, setPlayerCount] = useState<number>(0);
-
-  // Dealer Cards
-  const [dealerCards, setDealerCards] = useState<PickedCard[]>([]);
-  const [dealerCount, setDealerCount] = useState<number>(0);
-  const [dealerScore, setDealerScore] = useState<number>(0);
-
-  //Status Message
-  const [statusMessage, setStatusMessage] = useState<string>("");
-
-  // Game state
-  const [gameState, setGameState] = useState<GameState>(GameState.Init);
+  const [state, dispatch] = useReducer(boardReducer, INITIAL_BOARD_STATE);
 
   const drawCard = useCallback(
-    (cardType: CardType) => {
-      if (deck.length > 0) {
-        const randomIndex = Math.floor(Math.random() * deck.length);
-        const card = deck[randomIndex];
-
-        let modifiedDeck = deck;
-        modifiedDeck.splice(randomIndex, 1);
-
-        setDeck([...modifiedDeck]);
-        setCard(cardType, card);
-      } else {
-        setStatusMessage(StatusMessage.GameOver);
-      }
-    },
-    [deck]
+    (cardType: CardType) =>
+      dispatch({
+        type: "DRAW_CARD",
+        payload: {
+          cardType,
+        },
+      }),
+    []
   );
-
-  const setCard = (cardType: CardType, card: Card) => {
-    switch (cardType) {
-      case CardType.Player:
-        const playerCard = [{ ...card, hidden: false }];
-        setPlayerCount((prevState: number) => getCardCount(prevState, card));
-        setPlayerCards((prevState: PickedCard[]) => [
-          ...prevState,
-          ...playerCard,
-        ]);
-        break;
-
-      case CardType.Dealer:
-        const dealerCard = [{ ...card, hidden: false }];
-        setDealerCount((prevState: number) => getCardCount(prevState, card));
-        setDealerScore((prevState: number) => getCardCount(prevState, card));
-        setDealerCards((prevState: PickedCard[]) => [
-          ...prevState,
-          ...dealerCard,
-        ]);
-        break;
-
-      case CardType.Hidden:
-        const hiddenCard = [{ ...card, hidden: true }];
-        setDealerScore((prevState: number) => getCardCount(prevState, card));
-        setDealerCards((prevState: PickedCard[]) => [
-          ...prevState,
-          ...hiddenCard,
-        ]);
-        break;
-
-      default:
-        break;
-    }
-  };
 
   const hit = () => {
     drawCard(CardType.Player);
   };
 
   const stand = () => {
-    setGameState(GameState.DealerHand);
-  };
-
-  const revealDealerCards = useCallback(() => {
-    const revealedDealerCards: PickedCard[] = dealerCards.map(
-      (card: PickedCard) => {
-        if (card.hidden === true) {
-          card.hidden = false;
-        }
-        return card;
-      }
-    );
-    setDealerCount(dealerScore);
-    setDealerCards(revealedDealerCards);
-  }, [dealerCards, dealerScore]);
-
-  const determineWinner = (playerScore: number, dealerScore: number) => {
-    if (playerScore > dealerScore || dealerScore > 21) {
-      setStatusMessage(StatusMessage.PlayerWins);
-    } else if (dealerScore > playerScore) {
-      setStatusMessage(StatusMessage.DealerWins);
-    } else {
-      setStatusMessage(StatusMessage.Tie);
-    }
+    dispatch({
+      type: "UPDATE_GAME_STATE",
+      payload: {
+        gameState: GameState.DealerHand,
+      },
+    });
   };
 
   const reset = () => {
-    setDeck(defaultDeck);
-    setPlayerCount(0);
-    setDealerCount(0);
-    setDealerScore(0);
-    setPlayerCards([]);
-    setDealerCards([]);
-    setGameState(GameState.Init);
-    setStatusMessage("");
+    dispatch({ type: "RESET" });
   };
 
   // Game Loop
   useEffect(() => {
-    if (gameState === GameState.Init) {
-      drawCard(CardType.Player);
-      drawCard(CardType.Hidden);
-      drawCard(CardType.Player);
-      drawCard(CardType.Dealer);
-      setGameState(GameState.PlayerHand);
+    if (state.gameState === GameState.Init) {
+      dispatch({ type: "DRAW_CARD", payload: { cardType: CardType.Player } });
+      dispatch({ type: "DRAW_CARD", payload: { cardType: CardType.Hidden } });
+      dispatch({ type: "DRAW_CARD", payload: { cardType: CardType.Player } });
+      dispatch({ type: "DRAW_CARD", payload: { cardType: CardType.Dealer } });
+      dispatch({
+        type: "UPDATE_GAME_STATE",
+        payload: {
+          gameState: GameState.PlayerHand,
+        },
+      });
     }
-    if (gameState === GameState.PlayerHand && playerCount > 21) {
-      setGameState(GameState.GameOver);
-      setStatusMessage(StatusMessage.DealerWins);
+    if (state.gameState === GameState.PlayerHand && state.playerCount > 21) {
+      dispatch({ type: "DETERMINE_WINNER" });
     }
 
-    if (gameState === GameState.DealerHand) {
-      if (dealerScore >= 17) {
-        revealDealerCards();
-        determineWinner(playerCount, dealerScore);
-        setGameState(GameState.GameOver);
+    if (state.gameState === GameState.DealerHand) {
+      if (state.dealerScore >= 17) {
+        dispatch({ type: "DETERMINE_WINNER" });
       } else {
-        drawCard(CardType.Dealer);
+        dispatch({ type: "DRAW_CARD", payload: { cardType: CardType.Dealer } });
       }
     }
-  }, [
-    gameState,
-    playerCount,
-    dealerCount,
-    dealerScore,
-    dealerCards,
-    drawCard,
-    revealDealerCards,
-  ]);
+  }, [state.gameState, state.playerCount, state.dealerScore]);
 
   return (
     <Table
-      statusMessage={statusMessage}
-      playerCount={playerCount}
-      playerCards={playerCards}
-      dealerCards={dealerCards}
-      dealerCount={dealerCount}
-      gameState={gameState}
+      statusMessage={state.statusMessage}
+      playerCount={state.playerCount}
+      playerCards={state.playerCards}
+      dealerCards={state.dealerCards}
+      dealerCount={state.dealerCount}
+      gameState={state.gameState}
       hit={hit}
       stand={stand}
       reset={reset}

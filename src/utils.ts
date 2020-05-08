@@ -1,4 +1,4 @@
-import { Card } from "../types";
+import { Card } from "./types";
 
 export const getAceValue = (count: number) => {
   if (count + 11 > 21) {
